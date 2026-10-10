@@ -1,0 +1,28 @@
+name: zipwireshootout
+description: "Zip Wire Shootout - Shoot from zip-lines"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  audioplayers: ^6.8.1
+  shared_preferences: ^2.5.6
+  in_app_purchase: ^3.2.0
+  cupertino_icons: ^1.0.8
+  share_plus: ^13.3.1
+  in_app_review: ^2.0.12
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/zipwireshootout_logo.png
+    - assets/wajiha_logo.png
