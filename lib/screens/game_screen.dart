@@ -1,16 +1,43 @@
 import 'package:flutter/material.dart';
 import '../engine/shoot_engine.dart';
 import '../theme/game_config.dart';
+import '../services/audio_service.dart';
 
 class GameScreen extends StatefulWidget {
   final GameConfig config;
   final ShootEngine engine;
-  const GameScreen({super.key, required this.config, required this.engine});
+  final ZipwireshootoutAudio audio;
+  const GameScreen(
+      {super.key, required this.config, required this.engine, required this.audio});
   @override State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
-  @override void initState() { super.initState(); widget.engine.start(); }
+  @override
+  void initState() {
+    super.initState();
+    final a = widget.audio;
+    final e = widget.engine;
+    e.onShoot = () => a.shoot();
+    e.onTargetHit = (combo) {
+      a.targetHit();
+      if (combo >= 3) a.combo();
+    };
+    e.onTargetMiss = () => a.targetMiss();
+    e.onHazardHit = () => a.hazardHit();
+    e.onGameOver = () => a.lose();
+    e.onLevelUp = () => a.levelUp();
+    e.start();
+    a.gameStart();
+    a.startGameMusic();
+  }
+
+  @override
+  void dispose() {
+    // Back on the menu — hand music back to the menu track.
+    widget.audio.startMenuMusic();
+    super.dispose();
+  }
   @override Widget build(BuildContext context) {
     final c = widget.config;
     return Scaffold(
@@ -78,7 +105,10 @@ class _GameScreenState extends State<GameScreen> {
       Text('Best combo: x${e.bestCombo}  •  Accuracy: ${(e.accuracy * 100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white70)),
       const SizedBox(height: 24),
       ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: c.accentColor, padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16)),
-        onPressed: () => setState(() => e.start()), child: const Text('PLAY AGAIN', style: TextStyle(fontSize: 18))),
+        onPressed: () {
+          widget.audio.click();
+          setState(() => e.start());
+        }, child: const Text('PLAY AGAIN', style: TextStyle(fontSize: 18))),
       TextButton(onPressed: () => Navigator.pop(context), child: const Text('Menu', style: TextStyle(color: Colors.white70))),
     ])));
   }

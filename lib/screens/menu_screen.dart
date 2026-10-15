@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 import '../theme/game_config.dart';
+import '../services/audio_service.dart';
 import '../engine/shoot_engine.dart';
 import 'game_screen.dart';
 import 'settings_screen.dart';
 import 'pro_screen.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
   final GameConfig config;
-  const MenuScreen({super.key, required this.config});
+  final ZipwireshootoutAudio audio;
+  const MenuScreen({super.key, required this.config, required this.audio});
+  @override State<MenuScreen> createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  @override
+  void initState() {
+    super.initState();
+    widget.audio.startMenuMusic();
+  }
+
   @override Widget build(BuildContext context) {
+    final config = widget.config;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(gradient: LinearGradient(
@@ -22,12 +35,24 @@ class MenuScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(config.tagline, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70, fontSize: 14)),
           const SizedBox(height: 32),
-          _btn(context, '🎯  PLAY', config.accentColor, () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => GameScreen(config: config, engine: ShootEngine(targetEmoji: config.targetEmoji))))),
-          _btn(context, '⚙️  SETTINGS', Colors.white24, () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => SettingsScreen(config: config)))),
-          _btn(context, '⭐  GO PRO', Colors.amber.shade700, () => Navigator.push(context,
-            MaterialPageRoute(builder: (_) => ProScreen(config: config)))),
+          _btn(context, '🎯  PLAY', config.accentColor, () {
+            widget.audio.click();
+            widget.audio.gameStart();
+            Navigator.push(context, MaterialPageRoute(builder: (_) => GameScreen(
+                config: config,
+                engine: ShootEngine(targetEmoji: config.targetEmoji),
+                audio: widget.audio)));
+          }),
+          _btn(context, '⚙️  SETTINGS', Colors.white24, () {
+            widget.audio.click();
+            Navigator.push(context, MaterialPageRoute(
+                builder: (_) => SettingsScreen(config: config, audio: widget.audio)));
+          }),
+          _btn(context, '⭐  GO PRO', Colors.amber.shade700, () {
+            widget.audio.click();
+            Navigator.push(context, MaterialPageRoute(
+                builder: (_) => ProScreen(config: config, audio: widget.audio)));
+          }),
           const SizedBox(height: 24),
           const Text('Credits: WAJIHA', style: TextStyle(color: Colors.white38, fontSize: 12)),
         ])))),

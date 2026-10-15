@@ -3,10 +3,12 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import '../theme/game_config.dart';
+import '../services/audio_service.dart';
 
 class ProScreen extends StatefulWidget {
   final GameConfig config;
-  const ProScreen({super.key, required this.config});
+  final ZipwireshootoutAudio audio;
+  const ProScreen({super.key, required this.config, required this.audio});
   @override State<ProScreen> createState() => _ProScreenState();
 }
 class _ProScreenState extends State<ProScreen> {
@@ -44,17 +46,17 @@ class _ProScreenState extends State<ProScreen> {
         const SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700, padding: const EdgeInsets.symmetric(vertical: 16)),
-          onPressed: () => _buy(c.proId),
+          onPressed: () { widget.audio.click(); _buy(c.proId); },
           child: Text('UNLOCK PRO — ${c.proId}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
         const SizedBox(height: 8),
-        OutlinedButton(onPressed: () => _buy(c.coffeeId),
+        OutlinedButton(onPressed: () { widget.audio.click(); _buy(c.coffeeId); },
           child: Text('☕ Buy me a coffee (${c.coffeeId})', style: const TextStyle(color: Colors.white))),
-        OutlinedButton(onPressed: () => _buy(c.chocolateId),
+        OutlinedButton(onPressed: () { widget.audio.click(); _buy(c.chocolateId); },
           child: Text('🍫 Buy me a chocolate (${c.chocolateId})', style: const TextStyle(color: Colors.white))),
         const SizedBox(height: 20),
         ElevatedButton.icon(icon: const Icon(Icons.share),
           label: const Text('Share this game'),
-          onPressed: () => Share.share('Check out ${c.displayName}! ${c.tagline}')),
+          onPressed: () { widget.audio.click(); Share.share('Check out ${c.displayName}! ${c.tagline}'); }),
         TextButton(onPressed: () => InAppReview.instance.openStoreListing(),
           child: const Text('Rate us ⭐', style: TextStyle(color: Colors.white70))),
       ]),

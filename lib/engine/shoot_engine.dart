@@ -33,6 +33,12 @@ class ShootEngine extends ChangeNotifier {
   final int targetsToLevel;
   int _killsThisLevel = 0;
   VoidCallback? onLevelUp;
+  // Audio hooks (wired by GameScreen; all optional).
+  void Function()? onShoot;
+  void Function(int combo)? onTargetHit;
+  void Function()? onTargetMiss;
+  void Function()? onHazardHit;
+  void Function()? onGameOver;
 
   ShootEngine({required this.targetEmoji, this.baseSpeed = 0.25, this.targetsToLevel = 12});
 
@@ -89,6 +95,7 @@ class ShootEngine extends ChangeNotifier {
     if (!playing || paused || gameOver) return;
     shotsFired++;
     shots.add(ShotFX(x, y));
+    onShoot?.call();
     // find closest target within radius
     ShootTarget? best; double bestD = 0.09;
     for (final t in targets) {
@@ -100,12 +107,14 @@ class ShootEngine extends ChangeNotifier {
       if (best.isHazard) {
         combo = 0; lives--;
         targets.remove(best);
+        onHazardHit?.call();
         if (lives <= 0) _end();
       } else {
         best.hp--;
         if (best.hp <= 0) {
           targets.remove(best);
           combo++; bestCombo = max(bestCombo, combo);
+          onTargetHit?.call(combo);
           final pts = (best.kind == TargetKind.bonus ? 50 : best.kind == TargetKind.fast ? 25 : 10) * (1 + combo ~/ 5);
           score += pts;
           _killsThisLevel++;
@@ -114,12 +123,19 @@ class ShootEngine extends ChangeNotifier {
       }
     } else {
       combo = 0;
+      onTargetMiss?.call();
     }
     notifyListeners();
   }
 
   void _miss() { combo = 0; }
-  void _end() { gameOver = true; playing = false; _loop?.cancel(); notifyListeners(); }
+  void _end() {
+    gameOver = true;
+    playing = false;
+    _loop?.cancel();
+    onGameOver?.call();
+    notifyListeners();
+  }
   double get accuracy => shotsFired == 0 ? 0 : hits / shotsFired;
   @override void dispose() { _loop?.cancel(); super.dispose(); }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/game_config.dart';
+import '../services/audio_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   final GameConfig config;
-  const SettingsScreen({super.key, required this.config});
+  final ZipwireshootoutAudio audio;
+  const SettingsScreen({super.key, required this.config, required this.audio});
   @override State<SettingsScreen> createState() => _SettingsScreenState();
 }
 class _SettingsScreenState extends State<SettingsScreen> {
@@ -43,8 +45,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none)),
           onChanged: (v) { playerName = v; _save(); }),
         const SizedBox(height: 16),
-        _toggle('🎵 Music', music, (v) => setState(() { music = v; _save(); })),
-        _toggle('🔊 Sound FX', sfx, (v) => setState(() { sfx = v; _save(); })),
+        _toggle('🎵 Music', music, (v) {
+          widget.audio.click();
+          setState(() { music = v; _save(); });
+          widget.audio.configure(musicOn: music, sfxOn: sfx, volume: widget.audio.volume);
+        }),
+        _toggle('🔊 Sound FX', sfx, (v) {
+          widget.audio.click();
+          setState(() { sfx = v; _save(); });
+          widget.audio.configure(musicOn: music, sfxOn: sfx, volume: widget.audio.volume);
+        }),
         _toggle('📳 Vibration', vibration, (v) => setState(() { vibration = v; _save(); })),
         const SizedBox(height: 16),
         Card(color: Colors.white10, child: Padding(padding: const EdgeInsets.all(12), child: Column(

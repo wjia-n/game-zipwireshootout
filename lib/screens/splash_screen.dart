@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import '../theme/game_config.dart';
+import '../services/audio_service.dart';
 import 'menu_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   final GameConfig config;
-  const SplashScreen({super.key, required this.config});
+  final ZipwireshootoutAudio audio;
+  const SplashScreen({super.key, required this.config, required this.audio});
   @override State<SplashScreen> createState() => _SplashScreenState();
 }
 class _SplashScreenState extends State<SplashScreen> {
   @override void initState() {
     super.initState();
+    // Start building music clips while the splash animates.
+    widget.audio.prewarm();
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) { Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (_) => MenuScreen(config: widget.config))); }
+        MaterialPageRoute(builder: (_) => MenuScreen(config: widget.config, audio: widget.audio))); }
     });
   }
   @override Widget build(BuildContext context) {
