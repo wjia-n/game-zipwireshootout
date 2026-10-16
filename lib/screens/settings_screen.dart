@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/game_config.dart';
 import '../services/audio_service.dart';
+import '../transfer/transfer_ui.dart';
 
 class SettingsScreen extends StatefulWidget {
   final GameConfig config;
@@ -38,6 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(backgroundColor: c.darkColor,
       appBar: AppBar(title: const Text('Settings'), backgroundColor: c.primaryColor, foregroundColor: Colors.white),
       body: ListView(padding: const EdgeInsets.all(16), children: [
+              TransferSaveTile(gameSlug: 'zipwireshootout'),
         const Text('PLAYER NAME', style: TextStyle(color: Colors.white54, fontSize: 12)),
         const SizedBox(height: 6),
         TextField(controller: _nameCtrl, style: const TextStyle(color: Colors.white),
